@@ -1,0 +1,37 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+
+# Tool caches
+.pytest_cache/
+.import_linter_cache/
+.ruff_cache/
+.uv-cache/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Agent state
+# Runtime memory, artifacts, and conversation logs generated locally.
+.lamssi/
+
+# Editor and IDE
+.idea/
+.vscode/
+
+# Scratch scripts that talk to a real provider
+tests/*_test.py
+
+# System files
+.DS_Store
+Thumbs.db

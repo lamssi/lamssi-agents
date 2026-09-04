@@ -1,0 +1,92 @@
+[project]
+name = "lamssi-agents"
+dynamic = ["version"]
+description = "Embeddable in-process AI agent runtime with explicit models, tools, features, and prompts."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "Lamssi Single Member P.C" }]
+keywords = ["ai", "agent", "llm", "tools", "skills", "memory", "react"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Required by the agent loop. Optional formats and UI integrations use extras.
+dependencies = [
+    "litellm>=1.82.0",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# read_file / extract_document on PDF, DOCX, PPTX, XLSX, HTML.
+documents = ["docling>=2.0.0"]
+# chat(image=...) and ask_model(image=...) encoding.
+vision = ["pillow>=10.0", "numpy>=1.26"]
+# read_table support for delimited, JSON, NumPy, Excel, MATLAB, HDF5, and TDMS.
+tables = [
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "openpyxl>=3.1",   # .xlsx / .xlsm
+    "scipy>=1.11",     # .mat
+    "h5py>=3.10",      # .h5 / .hdf5 / .he5
+    "npTDMS>=1.9",     # .tdms
+]
+qt = [
+    "PySide6>=6.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/lamssi/lamssi-agents"
+Repository = "https://github.com/lamssi/lamssi-agents"
+Issues = "https://github.com/lamssi/lamssi-agents/issues"
+
+[project.scripts]
+lamssi-agent = "lamssi_cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "import-linter>=2.0",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Single source of truth: __version__ in the package __init__.
+[tool.hatch.version]
+path = "src/lamssi_agents/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lamssi_agents", "src/lamssi_tools", "src/lamssi_cli", "src/lamssi_packages"]
+
+# Bundled skills are read from disk at runtime.
+artifacts = [
+    "src/lamssi_agents/features/skills/builtin/**/*.md",
+]
+
+# Source and release metadata included in the source distribution.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/CONTRIBUTING.md",
+    "/SECURITY.md",
+    "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+xfail_strict = true
+python_files = ["test_*.py"]
+markers = [
+    "slow: builds and installs a wheel in an isolated environment",
+]

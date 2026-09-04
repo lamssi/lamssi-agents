@@ -1,0 +1,90 @@
+[importlinter]
+root_packages =
+    lamssi_tools
+    lamssi_agents
+    lamssi_cli
+    lamssi_packages
+include_external_packages = True
+unmatched_ignore_imports_alerting = error
+
+[importlinter:contract:1]
+name = Kernel layers: agents may use tools, never the reverse
+type = layers
+layers =
+    lamssi_agents
+    lamssi_tools
+
+[importlinter:contract:2]
+name = No host or GUI dependency anywhere in the kernel
+type = forbidden
+source_modules =
+    lamssi_tools
+    lamssi_agents
+forbidden_modules =
+    core
+    ui
+    devices
+    plugins
+    PySide6
+    PyQt5
+    PyQt6
+
+[importlinter:contract:3]
+name = Prompt data contracts are an import leaf
+type = forbidden
+source_modules =
+    lamssi_agents.prompt.model
+forbidden_modules =
+    lamssi_agents.agent
+    lamssi_agents.agents
+    lamssi_agents.runtime
+    lamssi_agents.tooling
+    lamssi_agents.skills
+    lamssi_agents.features
+    lamssi_agents.providers
+    lamssi_agents.history
+
+[importlinter:contract:4]
+name = Prompt assembly and tool invocation stay independent of the Agent runtime
+type = forbidden
+source_modules =
+    lamssi_agents.prompt
+    lamssi_agents.tooling.invocation
+forbidden_modules =
+    lamssi_agents.agent
+    lamssi_agents.agents
+    lamssi_agents.runtime
+    lamssi_agents.providers
+    lamssi_agents.history
+    lamssi_agents.memory
+    lamssi_agents.conversation_log
+
+[importlinter:contract:5]
+name = The CLI is a host: the kernel must not import it
+type = forbidden
+source_modules =
+    lamssi_tools
+    lamssi_agents
+forbidden_modules =
+    lamssi_cli
+    lamssi_packages
+
+[importlinter:contract:6]
+name = Packs build on the kernel: the kernel must not import them
+type = forbidden
+source_modules =
+    lamssi_tools
+    lamssi_agents
+forbidden_modules =
+    lamssi_packages
+
+[importlinter:contract:7]
+name = The Agent runtime path does not import concrete tool features
+type = forbidden
+source_modules =
+    lamssi_agents.runtime
+    lamssi_agents.agent
+forbidden_modules =
+    lamssi_agents.features
+ignore_imports =
+    lamssi_agents.agent.base -> lamssi_agents.features.base

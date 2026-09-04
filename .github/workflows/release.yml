@@ -1,0 +1,41 @@
+name: Release
+
+# Tag and publish a GitHub Release when the package version in
+# src/lamssi_agents/__init__.py changes on the default branch. Idempotent: it does
+# nothing when the vX.Y.Z tag already exists, so an unrelated push is a no-op.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: |
+          v=$(python -c "import re,pathlib;print(re.search(r'__version__\s*=\s*\"([^\"]+)\"',pathlib.Path('src/lamssi_agents/__init__.py').read_text())[1])")
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+          echo "Version is $v"
+
+      - name: Tag and release when the version is new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v${{ steps.version.outputs.value }}"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "$tag already exists; nothing to release."
+            exit 0
+          fi
+          git tag "$tag"
+          git push origin "$tag"
+          gh release create "$tag" --title "$tag" --generate-notes
